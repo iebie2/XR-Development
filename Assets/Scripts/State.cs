@@ -1,133 +1,131 @@
+using System.Collections;
+using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.AI;
 
-public class State : MonoBehaviour
+public class State 
 {
+
+    public EnemyBaseAI enemyAI;
     
-    [SerializeField]
-    float chaseSpeed;
-    [SerializeField]
-    float runSpeed;
-    [SerializeField]
-    float patrolSpeed;
-    [SerializeField]
-    Transform[] pathPoints;
-    [SerializeField]
-    float accuracyDistance;
-    int currentPathPointID;
-    public enum STATE
-    {
-        CHASE, RUN, PATROL
-    }
-    public STATE currentState;
-    public Transform safePlace;
+    //protected Animator anim;
     protected Transform enemy;
     protected Transform player;
+    
+    protected NavMeshAgent agent;
+    
 
 
-    public void CanSeePlayer()
+
+    public State(EnemyBaseAI _enemyAI, Transform _player, NavMeshAgent _agent/*, Animator _anim*/)
     {
-        Vector3 direction = (player.position - enemy.position).normalized;
-        float distance = Vector3.Distance(enemy.position, player.position);
-        float angle = Vector3.Angle(enemy.forward, direction);
-
-        if (distance < 10f && angle < 60f)
-        {
-            RaycastHit hit;
-
-            if (Physics.Raycast(enemy.position + Vector3.up, direction, out hit, 10f))
-            {
-                if (hit.transform.CompareTag("Player"))
-                {
-                    currentState = STATE.CHASE;
-                }
-            }
-        }
+        enemyAI = _enemyAI;
+        enemy = _enemyAI.transform;
+        player = _player;
+        agent = _agent;
+        //anim = _anim;
+        
     }
-    public void IsPlayerBehind()
+
+
+    //Progress
+    public virtual void Enter() { }
+
+    public virtual void Updating() { }
+    public virtual void Exit() { }
+   
+
+    
+}
+    
+
+//States
+public class Patrol : State
     {
-        Vector3 direction = enemy.position - player.position;
-        float angle = Vector3.Angle(direction, enemy.forward);
-        if (direction.magnitude < 2 && angle < 30)
+    public Patrol(EnemyBaseAI _enemy, Transform _player, NavMeshAgent _agent) 
+        : base(_enemy, _player, _agent)
         {
-            currentState = STATE.RUN;
+        agent.speed = enemyAI.patrolSpeed;
+        agent.isStopped = false;
+    }
+    public override void Updating()
+    {
+        if (enemyAI.pathPoints.Length == 0) 
             return;
-        }
-        else
+        if (Vector3.Distance(enemy.position, enemyAI.pathPoints[enemyAI.currentPathPointID].position) < enemyAI.accuracyDistance)
         {
-
-            return;
-        }
-    }
-    public void Patrol()
-    {
-        if (Vector3.Distance(transform.position, pathPoints[currentPathPointID].position) < accuracyDistance)
-        {
-            currentPathPointID = (currentPathPointID + 1) % pathPoints.Length;
+            enemyAI.currentPathPointID = Random.Range(0, enemyAI.pathPoints.Length);
         }
 
-        Vector3 direction = pathPoints[currentPathPointID].position - transform.position;
-        direction.y = 0;
-        direction = direction.normalized;
-
-        transform.position += direction * patrolSpeed * Time.deltaTime;
-        transform.LookAt(pathPoints[currentPathPointID]);
-    }
-    public void RunAway()
-    {
-        Vector3 direction = safePlace.position - transform.position;
-        direction.y = 0;
-        direction = direction.normalized;
-
-        transform.position += direction * runSpeed * Time.deltaTime;
-        transform.LookAt(safePlace);
-
-        if (Vector3.Distance(transform.position, safePlace.position) < 1f)
-        {
-            if (Vector3.Distance(player.position, transform.position) > 5f)
-            {
-                currentState = STATE.PATROL;
-            }
-        }
-    }
-    public void Chase()
-    {
-        Vector3 direction = player.position - transform.position;
-        direction.y = 0;
-        direction = direction.normalized;
-
-        transform.position += direction * chaseSpeed * Time.deltaTime;
-        transform.LookAt(player);
-    }
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        currentState = STATE.PATROL;
-        enemy = transform;
-        safePlace = GameObject.FindGameObjectWithTag("Safe").transform;
-        player = GameObject.FindGameObjectWithTag("Player").transform;
-        currentPathPointID = 0;
+        agent.SetDestination(enemyAI.pathPoints[enemyAI.currentPathPointID].position);
+        
     }
 
-    // Update is called once per frame
-    void Update()
+}
+public class Chase : State
+{
+    public Chase(EnemyBaseAI _enemy, Transform _player, NavMeshAgent _agent)
+        : base(_enemy, _player, _agent)
     {
-        CanSeePlayer();
-        IsPlayerBehind();
+        agent.speed = enemyAI.chaseSpeed;
+        agent.isStopped = false;
+    }
 
-        // Execute behavior
-        switch (currentState)
-        {
-            case STATE.PATROL:
-                Patrol();
-                break;
 
-            case STATE.CHASE:
-                Chase();
-                break;
-
-            case STATE.RUN:
-                RunAway();
-                break;
-        }
+    public override void Updating()
+    {
+        Debug.Log("enters");
+        agent.SetDestination(player.position);
+       
     }
 }
+public class Run : State
+{
+    public Run(EnemyBaseAI _enemy, Transform _player, NavMeshAgent _agent)
+       : base(_enemy, _player, _agent)
+    { 
+        agent.isStopped = false;
+        agent.speed = enemyAI.runSpeed;
+    }
+
+    public override void Enter()
+    {
+        
+        base.Enter();
+    }
+
+    public override void Updating()
+    {
+        
+        agent.SetDestination(enemyAI.safePlace.transform.position);
+
+        }
+  
+}
+public class Caught : State {
+    public Caught(EnemyBaseAI _enemy, Transform _player, NavMeshAgent _agent)
+            : base(_enemy, _player, _agent)
+    {
+        agent.isStopped = true;
+    }
+    public override void Updating()
+
+    {
+        Vector3 direction = player.position - enemy.position;
+
+        direction.y = 0f;
+
+        Quaternion targetRotation =
+            Quaternion.LookRotation(direction);
+
+        enemy.rotation = Quaternion.Slerp(
+            enemy.rotation,
+            targetRotation,
+            Time.deltaTime * 5f);
+
+    }
+
+}
+
+

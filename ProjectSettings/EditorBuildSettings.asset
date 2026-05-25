@@ -6,9 +6,13 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/v1.unity
-    guid: 1ebc64ea4536fc84ca8442895d56f31a
+    path: Assets/Scenes/testnavm.unity
+    guid: d2ade376da245ee40abfc3e953c65eaa
+  - enabled: 1
+    path: Assets/Scenes/V1.unity
+    guid: 99c9720ab356a0642a771bea13969a05
   m_configObjects:
-    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: ebd18881980152544b95b08be4062e09, type: 2}
-    com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 48a2610e4e7f2c94eb658163f1eeae66, type: 2}
+    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: eec7ebe7d43d45b4c946189cc892a58b, type: 2}
+    com.unity.xr.openxr.settings4: {fileID: 11400000, guid: c5ac43562c613c641a79030e4096647e, type: 2}
   m_UseUCBPForAssetBundles: 0
