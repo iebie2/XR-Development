@@ -35,25 +35,27 @@ public class EnemyBaseAI : MonoBehaviour
         Vector3 direction = (player.position - this.transform.position).normalized;
         float distance = Vector3.Distance(this.transform.position, player.position);
         float angle = Vector3.Angle(this.transform.forward, direction);
-        
+
+        RaycastHit hit;
+        Vector3 eyePosition = transform.position + Vector3.up * 2f;
         if (distance < visionDistance && angle < visionAngle)
         {
-            RaycastHit hit;
-            //Vector3 eyePosition = transform.position + Vector3.up * 1.5f;
-
-            if (Physics.Raycast(transform.position, direction, out hit, visionDistance))
+            
+           
+            if (Physics.Raycast(eyePosition, direction, out hit, visionDistance))
             {
-               
+               Debug.DrawRay(eyePosition, direction * visionDistance, Color.red);
                 if (hit.transform.CompareTag("Player"))
-                {
+                {  
+                   
                     return true;
                 }
                 else
                 {
                     return false;
                 }
-            }
-        }
+            } 
+       }
         return false;
     }
     public bool IsPlayerBehind()

@@ -56,9 +56,7 @@ public class SkeletonAI : EnemyBaseAI
 
         if(currentState is Patrol)
         {
-            Debug.Log(CanSeePlayer());
-            Debug.Log("-----------------");
-            Debug.Log(IsPlayerMoving());
+           
             if (CanSeePlayer() && IsPlayerMoving())
             {
                 ChangeState(new Chase(this, player, agent));

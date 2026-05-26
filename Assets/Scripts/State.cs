@@ -53,12 +53,17 @@ public class Patrol : State
     {
         if (enemyAI.pathPoints.Length == 0) 
             return;
-        if (Vector3.Distance(enemy.position, enemyAI.pathPoints[enemyAI.currentPathPointID].position) < enemyAI.accuracyDistance)
+
+        Transform target = enemyAI.pathPoints[enemyAI.currentPathPointID];
+
+        agent.SetDestination(target.position);
+
+        //if (Vector3.Distance(enemy.position, enemyAI.pathPoints[enemyAI.currentPathPointID].position) < enemyAI.accuracyDistance)
+        if (!agent.pathPending && agent.remainingDistance <= enemyAI.accuracyDistance)
         {
             enemyAI.currentPathPointID = Random.Range(0, enemyAI.pathPoints.Length);
         }
 
-        agent.SetDestination(enemyAI.pathPoints[enemyAI.currentPathPointID].position);
         
     }
 

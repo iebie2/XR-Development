@@ -12,6 +12,7 @@ public class EyeAI : EnemyBaseAI
     //Methods
     void ChangeState(State newState)
     {
+
         //currentState.Exit();
 
         currentState = newState;
@@ -63,12 +64,13 @@ public class EyeAI : EnemyBaseAI
     {
         base.Start();
         currentState = new Patrol(this, player, agent);
-        currentState.Enter();
+        //currentState.Enter();
     }
 
     // Update is called once per frame
     void Update()
     {
+        Debug.Log(currentState);
         currentState.Updating();
         if (currentState is Patrol)
         {
