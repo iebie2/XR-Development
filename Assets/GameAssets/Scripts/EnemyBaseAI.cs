@@ -139,6 +139,15 @@ public class EnemyBaseAI : MonoBehaviour
         return false;
     }
 
+    protected void TriggerGameOver(string reason)
+    {
+        Vector3 direction = transform.position - player.position;
+        direction.y = 0f;
+        player.rotation = Quaternion.LookRotation(direction);
+
+        GameManager.Instance.EndGame(reason);
+    }
+
     protected virtual void Start()
     {
         agent = GetComponent<NavMeshAgent>();

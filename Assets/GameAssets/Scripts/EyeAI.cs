@@ -70,7 +70,7 @@ public class EyeAI : EnemyBaseAI
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(currentState);
+        
         currentState.Updating();
         if (currentState is Patrol)
         {
@@ -96,12 +96,7 @@ public class EyeAI : EnemyBaseAI
             if (SeenPlayerTooLong())
             {
                 ChangeState(new Caught(this, player, agent));
-
-                Vector3 direction = transform.position - player.position;
-                direction.y = 0f;
-                player.rotation = Quaternion.LookRotation(direction);
-
-                Debug.Log("Game over");
+                TriggerGameOver("Eye watched the player for too long");
             }
             else if (!CanSeePlayer())
             {

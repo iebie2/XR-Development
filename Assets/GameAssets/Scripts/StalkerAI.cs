@@ -76,12 +76,7 @@ public class StalkerAI : EnemyBaseAI
             else if (CaughtPlayer())
             {
                 ChangeState(new Caught(this, player, agent));
-
-                Vector3 direction = transform.position - player.position;
-                direction.y = 0f;
-                player.rotation = Quaternion.LookRotation(direction);
-
-                Debug.Log("Game over");
+                TriggerGameOver("Stalker caught the player");
             }
 
         }
