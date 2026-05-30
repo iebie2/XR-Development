@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+
 public enum GameSessionState
 {
     NotStarted,
@@ -11,6 +12,7 @@ public enum GameSessionState
 
 public class GameManager : Singleton<GameManager>
 {
+   
     [Header("Scenes")]
     [SerializeField] private string startSceneName = "StartScreen";
     [SerializeField] private string gameSceneName = "V1";
@@ -138,4 +140,6 @@ public class GameManager : Singleton<GameManager>
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
+
+   
 }
