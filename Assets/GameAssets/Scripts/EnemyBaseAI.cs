@@ -43,7 +43,7 @@ public class EnemyBaseAI : MonoBehaviour
         float angle = Vector3.Angle(this.transform.forward, direction);
 
         RaycastHit hit;
-        Vector3 eyePosition = transform.position + Vector3.up * 2f;
+        Vector3 eyePosition = transform.position + Vector3.up;
         if (distance < visionDistance && angle < visionAngle)
         {
             
