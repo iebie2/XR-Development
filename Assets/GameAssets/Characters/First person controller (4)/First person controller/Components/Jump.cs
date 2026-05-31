@@ -7,6 +7,7 @@ public class Jump : MonoBehaviour
     Rigidbody rigidbody;
     public float jumpStrength = 2;
     public event System.Action Jumped;
+    bool wasXRJumpPressed;
 
 
     void Reset()
@@ -23,7 +24,16 @@ public class Jump : MonoBehaviour
 
     void LateUpdate()
     {
-        if (Input.GetButtonDown("Jump") && groundCheck.isGrounded)
+        bool jumpPressed = Input.GetButtonDown("Jump");
+
+        if (XRRuntimeSupport.IsActive)
+        {
+            bool xrJumpPressed = XRRuntimeSupport.GetJumpPressed();
+            jumpPressed = xrJumpPressed && !wasXRJumpPressed && !XRUIButtonPointer.IsPointingAtButton;
+            wasXRJumpPressed = xrJumpPressed;
+        }
+
+        if (jumpPressed && groundCheck.isGrounded)
         {
             rigidbody.AddForce(Vector3.up * 100 * jumpStrength);
             Jumped?.Invoke();

@@ -23,6 +23,12 @@ public class FirstPersonLook : MonoBehaviour
 
     void Update()
     {
+        if (XRRuntimeSupport.IsActive)
+        {
+            ApplyXRHeadPose();
+            return;
+        }
+
         // Get smooth mouse look.
         Vector2 smoothMouseDelta = Vector2.Scale(new Vector2(Input.GetAxisRaw("Mouse X"), Input.GetAxisRaw("Mouse Y")), Vector2.one * sensitivity * smoothing);
         appliedMouseDelta = Vector2.Lerp(appliedMouseDelta, smoothMouseDelta, 1 / smoothing);
@@ -32,5 +38,16 @@ public class FirstPersonLook : MonoBehaviour
         // Rotate camera and controller.
         transform.localRotation = Quaternion.AngleAxis(-currentMouseLook.y, Vector3.right);
         character.localRotation = Quaternion.AngleAxis(currentMouseLook.x, Vector3.up);
+    }
+
+    private void ApplyXRHeadPose()
+    {
+        if (!XRRuntimeSupport.TryGetHeadPose(out Vector3 localPosition, out Quaternion localRotation))
+        {
+            return;
+        }
+
+        transform.localPosition = localPosition;
+        transform.localRotation = localRotation;
     }
 }

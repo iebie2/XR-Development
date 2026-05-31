@@ -41,7 +41,9 @@ public class Crouch : MonoBehaviour
 
     void LateUpdate()
     {
-        if (IsKeyPressed(keys))
+        bool crouchHeld = XRRuntimeSupport.IsActive ? XRRuntimeSupport.GetCrouchHeld() : IsKeyPressed(keys);
+
+        if (crouchHeld)
         {
             // Enforce crouched y local position of the head.
             head.localPosition = new Vector3(head.localPosition.x, crouchYLocalPosition, head.localPosition.z);

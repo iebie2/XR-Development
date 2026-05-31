@@ -9,14 +9,14 @@ EditorBuildSettings:
     path: Assets/Scenes/testnavm.unity
     guid: d2ade376da245ee40abfc3e953c65eaa
   - enabled: 1
+    path: Assets/Scenes/StartScreen.unity
+    guid: e3080e42ee05be8499f4186e079fcb78
+  - enabled: 1
     path: Assets/Scenes/V1.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
     path: Assets/Scenes/EndScreen.unity
     guid: 3342e79bbe9d10a4cab2de095b26ce2a
-  - enabled: 1
-    path: Assets/Scenes/StartScreen.unity
-    guid: e3080e42ee05be8499f4186e079fcb78
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: eec7ebe7d43d45b4c946189cc892a58b, type: 2}
