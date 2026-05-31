@@ -41,12 +41,7 @@ public class StalkerAI : EnemyBaseAI
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(currentState);
-        Debug.Log("-----------");
-        Debug.Log(CanSeePlayer());
-        Debug.Log("-----------");
-        Debug.Log(IsPlayerLookingAtMe());
-        Debug.Log("-----------");
+        
         
         currentState.Updating();
         if (currentState is Patrol)
@@ -73,7 +68,12 @@ public class StalkerAI : EnemyBaseAI
         }
         else if (currentState is Chase)
         {
-            if (!CanSeePlayer())
+            if (CaughtPlayer())
+            {
+                ChangeState(new Caught(this, player, agent));
+                TriggerGameOver("Stalker caught the player");
+            }
+            else if (!CanSeePlayer())
             {
 
                 ChangeState(new Patrol(this, player, agent));
@@ -82,11 +82,6 @@ public class StalkerAI : EnemyBaseAI
             {
                 ChangeState(new Freeze(this, player, agent));
 
-            }
-            else if (CaughtPlayer())
-            {
-                ChangeState(new Caught(this, player, agent));
-                TriggerGameOver("Stalker caught the player");
             }
 
         }

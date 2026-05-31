@@ -16,7 +16,11 @@ public class EnemyBaseAI : MonoBehaviour
     
     public float visionDistance;
     public float visionAngle;
-    public float eyeHeight;
+
+    [Header("Spotted Indicator")]
+    public bool showSpottedBeam = true;
+    public Color spottedBeamColor = Color.red;
+    public float spottedBeamWidth = 0.08f;
 
     
     public Transform[] pathPoints;
@@ -27,6 +31,7 @@ public class EnemyBaseAI : MonoBehaviour
     public NavMeshAgent agent;
     public Transform player;
 
+    private LineRenderer spottedBeam;
     private Vector3 lastPlayerPosition;
     private float movementTimer;
 
@@ -48,16 +53,51 @@ public class EnemyBaseAI : MonoBehaviour
                Debug.DrawRay(eyePosition, direction * visionDistance, Color.red);
                 if (hit.transform.CompareTag("Player"))
                 {  
-                   
+                    SetSpottedIndicator(true, eyePosition, hit.point);
                     return true;
                 }
                 else
                 {
+                    SetSpottedIndicator(false, eyePosition, eyePosition);
                     return false;
                 }
             } 
        }
+        SetSpottedIndicator(false, eyePosition, eyePosition);
         return false;
+    }
+
+    private void SetSpottedIndicator(bool isVisible, Vector3 startPosition, Vector3 endPosition)
+    {
+        if (!showSpottedBeam)
+        {
+            if (spottedBeam != null)
+            {
+                spottedBeam.enabled = false;
+            }
+
+            return;
+        }
+
+        if (spottedBeam == null)
+        {
+            spottedBeam = gameObject.AddComponent<LineRenderer>();
+            spottedBeam.positionCount = 2;
+            spottedBeam.useWorldSpace = true;
+            spottedBeam.material = new Material(Shader.Find("Sprites/Default"));
+        }
+
+        spottedBeam.enabled = isVisible;
+
+        if (!isVisible)
+            return;
+
+        spottedBeam.startColor = spottedBeamColor;
+        spottedBeam.endColor = spottedBeamColor;
+        spottedBeam.startWidth = spottedBeamWidth;
+        spottedBeam.endWidth = spottedBeamWidth * 0.35f;
+        spottedBeam.SetPosition(0, startPosition);
+        spottedBeam.SetPosition(1, endPosition);
     }
     public bool IsPlayerBehind()
     {

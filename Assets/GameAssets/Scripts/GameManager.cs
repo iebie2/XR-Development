@@ -20,6 +20,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private string startSceneName = "StartScreen";
     [SerializeField] private string gameSceneName = "V1";
     [SerializeField] private string endSceneName = "EndScreen";
+    [SerializeField] private string winSceneName = "WinScreen";
 
     [Header("Game Over")]
     [SerializeField] private bool pauseOnGameOver = true;
@@ -97,6 +98,23 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
+    public void WinGame()
+    {
+        if (SessionState == GameSessionState.GameOver)
+        {
+            return;
+        }
+
+        LastEndReason = "Player reached the water tower";
+        SessionState = GameSessionState.GameOver;
+        Time.timeScale = 1f;
+
+        if (!string.IsNullOrEmpty(winSceneName))
+        {
+            SceneManager.LoadScene(winSceneName);
+        }
+    }
+
     public void RestartGame()
     {
         StartGame();
@@ -116,7 +134,7 @@ public class GameManager : Singleton<GameManager>
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (scene.name == startSceneName || scene.name == endSceneName)
+        if (scene.name == startSceneName || scene.name == endSceneName || scene.name == winSceneName)
         {
             SetMenuCursor();
         }

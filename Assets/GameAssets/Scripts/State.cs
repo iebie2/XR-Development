@@ -127,7 +127,6 @@ public class Run : State
 
     public override void Updating()
     {
-        
         agent.SetDestination(enemyAI.safePlace.transform.position);
 
         }
