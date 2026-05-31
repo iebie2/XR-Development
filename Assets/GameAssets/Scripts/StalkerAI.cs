@@ -5,7 +5,7 @@ public class StalkerAI : EnemyBaseAI
 {
     //Variables
     State currentState;
-    private float stopChaseDistance = 15f;
+    private bool hasSpottedPlayer = false;
 
     //Methods
     void ChangeState(State newState)
@@ -29,19 +29,11 @@ public class StalkerAI : EnemyBaseAI
         return angle < 40f;
     }
 
-    public bool IsPlayerFarEnough()
-    {
-        float distance =
-       Vector3.Distance(transform.position,
-                        player.position);
-
-        return distance >= stopChaseDistance;
-    }
-
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         base.Start();
+        
         currentState = new Patrol(this, player, agent);
         currentState.Enter();
     }
@@ -49,28 +41,46 @@ public class StalkerAI : EnemyBaseAI
     // Update is called once per frame
     void Update()
     {
+        Debug.Log(currentState);
+        Debug.Log("-----------");
+        Debug.Log(CanSeePlayer());
+        Debug.Log("-----------");
+        Debug.Log(IsPlayerLookingAtMe());
+        Debug.Log("-----------");
+        
         currentState.Updating();
         if (currentState is Patrol)
         {
-            if (CanSeePlayer())
+            if (CanSeePlayer() && !IsPlayerLookingAtMe())
+            {
+                ChangeState(new Chase(this, player, agent));
+            }
+        }
+        else if (currentState is Freeze)
+        {
+            if (CanSeePlayer() && !IsPlayerLookingAtMe())
             {
                 ChangeState(new Chase(this, player, agent));
             }
             else if (IsPlayerBehind())
             {
                 ChangeState(new Run(this, player, agent));
+            }else if (!CanSeePlayer())
+            {
+                ChangeState(new Patrol(this, player, agent));
             }
 
         }
         else if (currentState is Chase)
         {
-            if (IsPlayerFarEnough())
+            if (!CanSeePlayer())
             {
+
                 ChangeState(new Patrol(this, player, agent));
             }
             else if (IsPlayerLookingAtMe())
             {
-                ChangeState(new Caught(this, player, agent));
+                ChangeState(new Freeze(this, player, agent));
 
             }
             else if (CaughtPlayer())
@@ -87,17 +97,6 @@ public class StalkerAI : EnemyBaseAI
                 ChangeState(new Patrol(this, player, agent));
             }
         }
-        else if (currentState is Caught)
-        {
-            if (IsPlayerFarEnough())
-            {
-                ChangeState(new Patrol(this, player, agent));
-            }
-            else if (!IsPlayerLookingAtMe())
-            {
-                ChangeState(new Patrol(this, player, agent));
-
-            }
-        }
+        
     }
 }

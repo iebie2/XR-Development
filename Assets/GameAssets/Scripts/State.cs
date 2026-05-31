@@ -47,6 +47,8 @@ public class Patrol : State
         : base(_enemy, _player, _agent)
         {
         agent.speed = enemyAI.patrolSpeed;
+        agent.updatePosition = true;
+        agent.updateRotation = true;
         agent.isStopped = false;
     }
     public override void Updating()
@@ -74,6 +76,8 @@ public class Chase : State
         : base(_enemy, _player, _agent)
     {
         agent.speed = enemyAI.chaseSpeed;
+        agent.updatePosition = true;
+        agent.updateRotation = true;
         agent.isStopped = false;
     }
 
@@ -81,8 +85,27 @@ public class Chase : State
     public override void Updating()
     {
         Debug.Log("enters");
-        agent.SetDestination(player.position);
+        if (agent.isOnNavMesh)
+        {
+            agent.SetDestination(player.position);
+        }
        
+    }
+}
+public class Freeze : State
+{
+    public Freeze(EnemyBaseAI _enemy, Transform _player, NavMeshAgent _agent)
+        : base(_enemy, _player, _agent)
+    {
+        agent.updatePosition = false;
+        agent.updateRotation = false;
+        agent.isStopped = true;
+        agent.velocity = Vector3.zero;
+
+        if (agent.isOnNavMesh)
+        {
+            agent.ResetPath();
+        }
     }
 }
 public class Run : State
@@ -90,6 +113,8 @@ public class Run : State
     public Run(EnemyBaseAI _enemy, Transform _player, NavMeshAgent _agent)
        : base(_enemy, _player, _agent)
     { 
+        agent.updatePosition = true;
+        agent.updateRotation = true;
         agent.isStopped = false;
         agent.speed = enemyAI.runSpeed;
     }
@@ -132,5 +157,7 @@ public class Caught : State {
     }
 
 }
+
+
 
 

@@ -16,6 +16,7 @@ public class EnemyBaseAI : MonoBehaviour
     
     public float visionDistance;
     public float visionAngle;
+    public float eyeHeight;
 
     
     public Transform[] pathPoints;
