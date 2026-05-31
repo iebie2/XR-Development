@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine.EventSystems;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -167,7 +168,9 @@ public class GameManager : Singleton<GameManager>
 
 public static class XRRuntimeSupport
 {
-    public static bool IsActive => XRSettings.enabled && XRSettings.isDeviceActive;
+    private static readonly List<XRDisplaySubsystem> XRDisplaySubsystems = new List<XRDisplaySubsystem>();
+
+    public static bool IsActive => XRSettings.enabled && (XRSettings.isDeviceActive || IsXRDisplayRunning());
 
     public static Vector2 GetMoveAxis()
     {
@@ -188,6 +191,13 @@ public static class XRRuntimeSupport
     {
         return GetButton(XRNode.RightHand, CommonUsages.primaryButton) ||
                GetButton(XRNode.LeftHand, CommonUsages.primaryButton);
+    }
+
+    public static bool GetUISubmitPressed()
+    {
+        return GetButton(XRNode.RightHand, CommonUsages.triggerButton) ||
+               GetButton(XRNode.LeftHand, CommonUsages.triggerButton) ||
+               GetJumpPressed();
     }
 
     public static bool GetCrouchHeld()
@@ -325,6 +335,22 @@ public static class XRRuntimeSupport
     {
         InputDevice device = InputDevices.GetDeviceAtXRNode(node);
         return device.TryGetFeatureValue(usage, out bool isPressed) && isPressed;
+    }
+
+    private static bool IsXRDisplayRunning()
+    {
+        XRDisplaySubsystems.Clear();
+        SubsystemManager.GetSubsystems(XRDisplaySubsystems);
+
+        foreach (XRDisplaySubsystem subsystem in XRDisplaySubsystems)
+        {
+            if (subsystem != null && subsystem.running)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
 
@@ -501,7 +527,7 @@ public class XRUIButtonPointer : MonoBehaviour
 
     private void HandleClick()
     {
-        bool primaryPressed = XRRuntimeSupport.GetJumpPressed();
+        bool primaryPressed = XRRuntimeSupport.GetUISubmitPressed();
 
         if (primaryPressed && !wasPrimaryPressed && hoveredButton != null)
         {
